@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+.gitignore
+app_log.2023-07-20.0.gz
