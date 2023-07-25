@@ -74,8 +74,11 @@ public class EmployeeRestController {
             response.setData("Employee with id " + id + " could not be deleted as it does not exist");
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
+    }
 
-
+    @DeleteMapping("/employees/delete-all")
+    public boolean deleteAllRecords(){
+        return true;
     }
 
 }

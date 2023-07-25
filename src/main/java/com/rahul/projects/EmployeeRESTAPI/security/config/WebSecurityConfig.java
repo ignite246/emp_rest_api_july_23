@@ -41,7 +41,12 @@ public class WebSecurityConfig {
         httpSecurity.httpBasic().and().authorizeHttpRequests()
                 .requestMatchers(HttpMethod.GET, "/employee-api/employees/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/employee-api/employees").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/employee-api/employees/**").hasRole("ADMIN");
+                .requestMatchers(HttpMethod.DELETE, "/employee-api/employees/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/actuator/**").hasAnyRole("USER", "ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "/test-sensitive/news").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/test-sensitive/news").hasAnyRole("USER", "ADMIN");
+
 
         httpSecurity.csrf().disable();
 
