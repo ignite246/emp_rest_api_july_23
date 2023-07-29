@@ -6,8 +6,11 @@ import com.rahul.projects.EmployeeRESTAPI.entities.Employee;
 import com.rahul.projects.EmployeeRESTAPI.services.EmployeeService;
 import com.rahul.projects.EmployeeRESTAPI.util.ClientRequestValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,32 +54,39 @@ public class EmployeeRestController {
     }
 
     @GetMapping("/employees/{id}")
-    public ResponseEntity<ClientResponse> fetchEmployeeById(@PathVariable("id") Integer id){
+    @Transactional(readOnly = true)
+    @Cacheable("employee-cache")
+    public ClientResponse fetchEmployeeById(@PathVariable("id") Integer id){
         final Employee employee = employeeService.fetchEmployeeByEmpId(id);
         ClientResponse<Employee> response = new ClientResponse<>();
         response.setMessage("Employee Found");
         response.setData(employee);
-        return new ResponseEntity<>(response,HttpStatus.FOUND);
+        return response;
+        //return new ResponseEntity<>(response,HttpStatus.FOUND);
 
     }
 
     @DeleteMapping("/employees/{id}")
-    public ResponseEntity<ClientResponse> deleteEmployeeById(@PathVariable("id") Integer id){
+    @CacheEvict("employee-cache")
+    public ClientResponse deleteEmployeeById(@PathVariable("id") Integer id){
         final boolean isDeleted = employeeService.deleteEmployeeById(id);
         ClientResponse<String> response = new ClientResponse<>();
         if(isDeleted) {
             response.setMessage("Deletion Successful");
             response.setData("Employee with id " + id + " deleted Successfully");
-            return new ResponseEntity<>(response,HttpStatus.FOUND);
+            return response;
+            //return new ResponseEntity<>(response,HttpStatus.FOUND);
         }
         else{
             response.setMessage("Deletion Failed");
             response.setData("Employee with id " + id + " could not be deleted as it does not exist");
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            return response;
+            //return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/employees/delete-all")
+    @CacheEvict("employee-cache")
     public boolean deleteAllRecords(){
         return true;
     }

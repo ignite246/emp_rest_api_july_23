@@ -2,9 +2,10 @@ package com.rahul.projects.EmployeeRESTAPI.dtos;
 
 import lombok.Data;
 
-@Data
-public class ClientResponse<T> {
+import java.io.Serializable;
 
+@Data
+public class ClientResponse<T> implements Serializable {
     private String message;
     private T data;
 }
