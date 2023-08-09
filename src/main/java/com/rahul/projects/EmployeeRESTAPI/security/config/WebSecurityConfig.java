@@ -49,7 +49,6 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/test-sensitive/news").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/test-sensitive/news").hasAnyRole("USER", "ADMIN");
 
-
         httpSecurity.csrf().disable();
 
         return httpSecurity.build();

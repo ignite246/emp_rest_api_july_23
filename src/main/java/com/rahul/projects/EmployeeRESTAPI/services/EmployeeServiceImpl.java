@@ -34,17 +34,27 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee fetchEmployeeByEmpId(Integer id) {
-        final Optional<Employee> optional = employeeRepository.findById(id);
-        if(optional.isPresent()){
-            return optional.get();
+        logger.info("===> Finding employee with emp id :: {} <===",id);
+        try {
+            Thread.sleep(1000);
+            final Optional<Employee> optional = employeeRepository.findById(id);
+            if (optional.isPresent()) {
+                return optional.get();
+            } else {
+                throw new EmployeeNotFoundException("Employee Not Found for given id : " + id);
+            }
         }
-        else {
-            throw new RuntimeException("Employee Not Found for given id : "+id);
+        catch(EmployeeNotFoundException ex){
+            logger.error("Could not find an employee :: {}",ex.getMessage());
+            return null;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public boolean deleteEmployeeById(Integer id) {
+        logger.info("===> Deleting employee with emp id :: {} <===",id);
         try {
             final Optional<Employee> optional = employeeRepository.findById(id);
             if (optional.isPresent()) {

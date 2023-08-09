@@ -1,5 +1,6 @@
 package com.rahul.projects.EmployeeRESTAPI.controllers;
 
+import com.rahul.projects.EmployeeRESTAPI.customproperties.CustomProperties;
 import com.rahul.projects.EmployeeRESTAPI.dtos.ClientResponse;
 import com.rahul.projects.EmployeeRESTAPI.dtos.ValidationResponseDto;
 import com.rahul.projects.EmployeeRESTAPI.entities.Employee;
@@ -22,6 +23,9 @@ public class EmployeeRestController {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private CustomProperties customProperties;
 
     @PostMapping("/employees")
     public ResponseEntity<ClientResponse> createEmployee(@RequestBody Employee employee) {
@@ -56,11 +60,18 @@ public class EmployeeRestController {
     @GetMapping("/employees/{id}")
     @Transactional(readOnly = true)
     @Cacheable("employee-cache")
-    public ClientResponse fetchEmployeeById(@PathVariable("id") Integer id){
+    public ClientResponse fetchEmployeeById(@PathVariable("id") Integer id) {
+
         final Employee employee = employeeService.fetchEmployeeByEmpId(id);
+
         ClientResponse<Employee> response = new ClientResponse<>();
-        response.setMessage("Employee Found");
-        response.setData(employee);
+        if (employee != null) {
+            response.setMessage("Employee Found");
+            response.setData(employee);
+        } else {
+            response.setMessage("Employee Not Found");
+            response.setData(null);
+        }
         return response;
         //return new ResponseEntity<>(response,HttpStatus.FOUND);
 
@@ -68,27 +79,30 @@ public class EmployeeRestController {
 
     @DeleteMapping("/employees/{id}")
     @CacheEvict("employee-cache")
-    public ClientResponse deleteEmployeeById(@PathVariable("id") Integer id){
+    public ClientResponse deleteEmployeeById(@PathVariable("id") Integer id) {
         final boolean isDeleted = employeeService.deleteEmployeeById(id);
         ClientResponse<String> response = new ClientResponse<>();
-        if(isDeleted) {
+        if (isDeleted) {
             response.setMessage("Deletion Successful");
             response.setData("Employee with id " + id + " deleted Successfully");
-            return response;
             //return new ResponseEntity<>(response,HttpStatus.FOUND);
-        }
-        else{
+        } else {
             response.setMessage("Deletion Failed");
             response.setData("Employee with id " + id + " could not be deleted as it does not exist");
-            return response;
             //return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
+        return response;
     }
 
     @DeleteMapping("/employees/delete-all")
     @CacheEvict("employee-cache")
-    public boolean deleteAllRecords(){
+    public boolean deleteAllRecords() {
         return true;
+    }
+
+    @GetMapping("/employees/courses")
+    public Map<String,String> getCourses(){
+       return  customProperties.getDx();
     }
 
 }
