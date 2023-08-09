@@ -35,12 +35,12 @@ public class EmployeeRestController {
 
             final Employee createdEmployee = employeeService.create(employee);
 
-            ClientResponse<Employee> response = new ClientResponse();
+            ClientResponse<Employee> response = new ClientResponse<>();
             response.setMessage("Employee Created Successfully");
             response.setData(createdEmployee);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
-            ClientResponse<Map<String, String>> response = new ClientResponse();
+            ClientResponse<Map<String, String>> response = new ClientResponse<>();
             response.setMessage("Unable to create employee - Invalid Request Body");
             response.setData(requestBodyValidationResult.getValidationResult());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -51,7 +51,7 @@ public class EmployeeRestController {
     public ResponseEntity<ClientResponse> fetchAllEmployees(@RequestParam(value = "pageNumber", defaultValue = "0") Integer pageNumber,
                                                             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
         final List<Employee> employees = employeeService.fetchAll(pageNumber, pageSize);
-        ClientResponse<List<Employee>> response = new ClientResponse();
+        ClientResponse<List<Employee>> response = new ClientResponse<>();
         response.setMessage(employees.size() + " employees fetched");
         response.setData(employees);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -60,7 +60,7 @@ public class EmployeeRestController {
     @GetMapping("/employees/{id}")
     @Transactional(readOnly = true)
     @Cacheable("employee-cache")
-    public ClientResponse fetchEmployeeById(@PathVariable("id") Integer id) {
+    public ClientResponse<Employee> fetchEmployeeById(@PathVariable("id") Integer id) {
 
         final Employee employee = employeeService.fetchEmployeeByEmpId(id);
 
@@ -79,7 +79,7 @@ public class EmployeeRestController {
 
     @DeleteMapping("/employees/{id}")
     @CacheEvict("employee-cache")
-    public ClientResponse deleteEmployeeById(@PathVariable("id") Integer id) {
+    public ClientResponse<String> deleteEmployeeById(@PathVariable("id") Integer id) {
         final boolean isDeleted = employeeService.deleteEmployeeById(id);
         ClientResponse<String> response = new ClientResponse<>();
         if (isDeleted) {
