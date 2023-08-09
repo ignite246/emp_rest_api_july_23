@@ -38,10 +38,12 @@ public class WebSecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.httpBasic().and().authorizeHttpRequests()
+        httpSecurity.httpBasic();
+        httpSecurity.authorizeHttpRequests()
                 .requestMatchers(HttpMethod.GET, "/employee-api/employees/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/employee-api/employees").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/employee-api/employees/**").hasRole("ADMIN")
+
                 .requestMatchers(HttpMethod.GET, "/actuator/**").hasAnyRole("USER", "ADMIN")
 
                 .requestMatchers(HttpMethod.POST, "/test-sensitive/news").hasAnyRole("USER", "ADMIN")
